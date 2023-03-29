@@ -244,7 +244,7 @@ def insert_data(username, password, database_name, filename):
 		for fields in reader:
 
 			#jsonArray.append(row)
-			
+
 			budget = int(fields['budget'])
 			genres = json.loads(fields['genres'])
 			homepage = fields['homepage']
@@ -269,13 +269,13 @@ def insert_data(username, password, database_name, filename):
 			title = fields['title']
 			vote_average = float(fields['vote_average'])
 			vote_count = float(fields['vote_count'])
-			
+
 			#count +=1
 			#print(count)
 			#if(count<2):
 			#	print(fields['genres'])
 
-			
+
 			# INSERT string
 			sql = """INSERT INTO movies
 			   (budget, homepage, id, original_lang, original_title, overview, popularity, release_date,
@@ -290,7 +290,7 @@ def insert_data(username, password, database_name, filename):
 			# Commit your changes in the database
 			connection.commit()
 
-			
+
 
 			# Insert genres
 			for x in genres:
@@ -318,7 +318,7 @@ def insert_data(username, password, database_name, filename):
 				# Commit your changes in the database
 				connection.commit()
 
-			
+
 
 			# Insert keywords
 			for x in keywords:
@@ -346,7 +346,7 @@ def insert_data(username, password, database_name, filename):
 				# Commit your changes in the database
 				connection.commit()
 
-			
+
 
 			# Insert production companies
 			for x in production_companies:
@@ -374,7 +374,7 @@ def insert_data(username, password, database_name, filename):
 				# Commit your changes in the database
 				connection.commit()
 
-			
+
 
 			# Insert production countries
 			for x in production_countries:
@@ -402,7 +402,7 @@ def insert_data(username, password, database_name, filename):
 				# Commit your changes in the database
 				connection.commit()
 
-			
+
 
 			# Insert spoken languages
 			for x in languages:
@@ -432,22 +432,22 @@ def insert_data(username, password, database_name, filename):
 
 
 
-			
-			
-			
-	
+
+
+
+
 	cursor.close()
 	connection.close()
 
 if __name__ == "__main__":
-	#create_relations("root", "Firebolts8", "movies_database")
+	#create_relations("root", "tempPassword", "movies_database")
 
-	#insert_data("root", "Firebolts8", "movies_database", "tmdb_5000_movies.csv")
+	#insert_data("root", "tempPassword", "movies_database", "tmdb_5000_movies.csv")
 
 
-	
+
 	# connect to the actual database
-	connection = create_connection("localhost", "root", "Firebolts8", "movies_database")
+	connection = create_connection("localhost", "root", "tempPassword", "movies_database")
 
 	#Create a cursor object
 	cursor = connection.cursor()
@@ -467,13 +467,13 @@ if __name__ == "__main__":
 	#Query 2
 	query = """SELECT title, production_company_name FROM production_companies INNER JOIN
 				(SELECT title, production_company_id FROM production_company_links INNER JOIN
-					(SELECT title, id FROM movies INNER JOIN 
+					(SELECT title, id FROM movies INNER JOIN
 						(SELECT movie_id FROM production_country_links
 						WHERE production_country_iso = 'US') AS x
 					ON movies.id = x.movie_id) AS y
 				ON production_company_links.movie_id = y.id) AS z
 			ON production_companies.production_company_id = z.production_company_id"""
-	
+
 	cursor.execute(query)
 	# get all records
 	records = cursor.fetchall()
@@ -489,7 +489,7 @@ if __name__ == "__main__":
 
 	#Query 3
 	query = """SELECT title, revenue FROM movies ORDER BY revenue DESC LIMIT 5"""
-	
+
 	cursor.execute(query)
 	# get all records
 	records = cursor.fetchall()
@@ -499,25 +499,25 @@ if __name__ == "__main__":
 	for row in records:
 		print(row)
 
-	
+
 
 	#Query 4
-	
+
 	query = """SELECT id, title, genre_name FROM genres INNER JOIN
 					(SELECT id, title, genre_id FROM genre_links INNER JOIN
 						(SELECT id, title FROM movies INNER JOIN
 							(SELECT DISTINCT movie_id
 							FROM genre_links WHERE movie_id in
-			 				(SELECT movie_id FROM genre_links JOIN 
+			 				(SELECT movie_id FROM genre_links JOIN
 			 				genres WHERE genre_name='Science Fiction')
-			 				AND movie_id in 
-							(SELECT movie_id FROM genre_links JOIN 
+			 				AND movie_id in
+							(SELECT movie_id FROM genre_links JOIN
 							genres WHERE genre_name='Mystery')
 							) AS bothGen
 						ON movies.id = bothGen.movie_id) AS withIDs
 					ON genre_links.movie_id = withIDs.id) AS withGenreID
 				ON genres.genre_id = withGenreID.genre_id ORDER BY id"""
-	
+
 	cursor.execute(query)
 	# get all records
 	records = cursor.fetchall()
@@ -544,15 +544,15 @@ if __name__ == "__main__":
 			currentTitle = row[1]
 			currentGenres = row[2] + ", "
 
-	
 
 
 
-	
+
+
 	#Query 5
-	query = """SELECT title, popularity FROM movies 
+	query = """SELECT title, popularity FROM movies
 				WHERE popularity > (SELECT avg(popularity) FROM movies)"""
-	
+
 	cursor.execute(query)
 	# get all records
 	records = cursor.fetchall()
@@ -564,4 +564,3 @@ if __name__ == "__main__":
 			break
 		print(row)
 		count+=1
-	
